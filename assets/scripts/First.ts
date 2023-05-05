@@ -11,7 +11,6 @@ export class First extends Component {
   update(deltaTime: number) {}
 
   onBtnStartClick() {
-    console.log('onBtnStartClick')
     director.loadScene('main')
   }
 }
