@@ -1,21 +1,46 @@
-import { _decorator, animation, Animation, AnimationClip, Component, Node, Vec3 } from 'cc'
+import { _decorator, animation, Animation, AnimationClip, Component, Label, Node, tween, Tween, Vec3 } from 'cc'
 
 const { ccclass, property } = _decorator
 
+export const BallElementEvent = {
+  PlayAnimationEnd: 'PlayAnimationEnd'
+}
 @ccclass('BallElement')
 export class BallElement extends Component {
   public targetPos: Vec3 = null
+
+  @property({ type: Label })
+  private nameLabel: Label = null
+
   private animation: Animation = null
 
   onLoad() {
-    this.setAnimationInfo()
+    // this.setAnimationInfo()
   }
 
   start() {
-    this.animation.play('bm')
+    // this.animation.play('bm')
+    this.playAnimation()
   }
 
   update(deltaTime: number) {}
+
+  playAnimation() {
+    Tween.stopAllByTarget(this.node)
+    tween(this.node)
+      .to(0.2, { position: this.targetPos })
+      .to(0.2, { scale: new Vec3(0.8, 0.8, 0.9) })
+      .to(0.2, { scale: new Vec3(1, 1, 1) })
+      .call(() => {
+        this.node.emit('PlayAnimationEnd')
+      })
+      .start()
+  }
+
+  move(pos: Vec3) {
+    Tween.stopAllByTarget(this.node)
+    tween(this.node).to(0.2, { position: pos }).start()
+  }
 
   setAnimationInfo() {
     // this.animation = this.node.getComponent(AnimationComponent)
@@ -41,5 +66,9 @@ export class BallElement extends Component {
 
     clip.addTrack(track)
     this.animation.defaultClip = clip
+  }
+
+  set label(value: string) {
+    this.nameLabel.string = value
   }
 }
