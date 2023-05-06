@@ -1,9 +1,25 @@
-import { _decorator, animation, Animation, AnimationClip, Component, Label, Node, tween, Tween, Vec3 } from 'cc'
+import {
+  _decorator,
+  animation,
+  Animation,
+  AnimationClip,
+  Collider2D,
+  Component,
+  Contact2DType,
+  IPhysics2DContact,
+  Label,
+  Node,
+  RigidBody2D,
+  tween,
+  Tween,
+  Vec3
+} from 'cc'
 
 const { ccclass, property } = _decorator
 
 export const BallElementEvent = {
-  PlayAnimationEnd: 'PlayAnimationEnd'
+  PlayAnimationEnd: 'PlayAnimationEnd',
+  MovePositionEnd: 'MovePositionEnd'
 }
 @ccclass('BallElement')
 export class BallElement extends Component {
@@ -14,8 +30,27 @@ export class BallElement extends Component {
 
   private animation: Animation = null
 
+  private isLoading: boolean = false
+
+  private _playTween: Tween<Node> = null
+
   onLoad() {
     // this.setAnimationInfo()
+    const collider2d = this.node.getComponent(Collider2D)
+    collider2d.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this)
+    // collider2d.on()
+  }
+
+  onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+    if (this.isLoading) return
+    console.log('onBeginContact', selfCollider, otherCollider)
+    if (otherCollider.node.name === 'BallElement') {
+      Tween.stopAllByTarget(otherCollider.node)
+      otherCollider.node.emit(BallElementEvent.PlayAnimationEnd, otherCollider.node)
+    }
+    this._playTween?.stop()
+
+    // this.node.emit(BallElementEvent.PlayAnimationEnd, this.node)
   }
 
   start() {
@@ -26,20 +61,30 @@ export class BallElement extends Component {
   update(deltaTime: number) {}
 
   playAnimation() {
+    this.isLoading = true
     Tween.stopAllByTarget(this.node)
-    tween(this.node)
+    this._playTween = tween(this.node)
       .to(0.2, { position: this.targetPos })
       .to(0.2, { scale: new Vec3(0.8, 0.8, 0.9) })
       .to(0.2, { scale: new Vec3(1, 1, 1) })
       .call(() => {
-        this.node.emit('PlayAnimationEnd')
+        this.node.emit(BallElementEvent.PlayAnimationEnd, this.node)
+        this.isLoading = false
+        this._playTween = null
       })
       .start()
   }
 
   move(pos: Vec3) {
     Tween.stopAllByTarget(this.node)
-    tween(this.node).to(0.2, { position: pos }).start()
+    this.node.getComponent(RigidBody2D).enabledContactListener = false
+    tween(this.node)
+      .to(0.2, { position: pos })
+      .call(() => {
+        this.node.emit(BallElementEvent.MovePositionEnd, this.node)
+        this.node.getComponent(RigidBody2D).enabledContactListener = true
+      })
+      .start()
   }
 
   setAnimationInfo() {

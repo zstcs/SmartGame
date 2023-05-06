@@ -1,7 +1,23 @@
-import { _decorator, Component, instantiate, Node, Prefab, Tween, tween, UIOpacity, Vec3 } from 'cc'
+import {
+  _decorator,
+  Collider2D,
+  Component,
+  Contact2DType,
+  debug,
+  instantiate,
+  IPhysics2DContact,
+  Node,
+  PhysicsSystem2D,
+  Prefab,
+  Tween,
+  tween,
+  UIOpacity,
+  Vec3
+} from 'cc'
 import { BallElement, BallElementEvent } from './BallElement'
 const { ccclass, property } = _decorator
 const BASE_RADIUS = 300
+const ANGLE_PROP = '__angle__'
 @ccclass('Main')
 export class Main extends Component {
   @property({ type: Prefab, visible: true, displayName: '预制体' })
@@ -36,34 +52,38 @@ export class Main extends Component {
     })
   }
 
-  addBall(name?:string) {
+  addBall(name?: string) {
     if (this.isAddBalling) return
     this.isAddBalling = true
     const nodes = [...this.ballNodes]
     const ball = instantiate(this._ballElment)
-    const radians = (Math.PI / 180) * Math.round(Math.random() * 360)
+    const angle = Math.round(Math.random() * 360)
+    const radians = (Math.PI / 180) * angle
     const x = 0 + BASE_RADIUS * Math.sin(radians)
     const y = 0 + BASE_RADIUS * Math.cos(radians)
     const ballElement = this._initBallElement(ball, x, y)
     ballElement.label = name ?? String(nodes.length)
-    ballElement.node.on(BallElementEvent.PlayAnimationEnd, () => {
+    ballElement.node.once(BallElementEvent.PlayAnimationEnd, () => {
       this.resetBallPostion()
       this.isAddBalling = false
     })
-    Reflect.set(ball, '__radians__', radians)
+    ballElement.node.once(BallElementEvent.MovePositionEnd, () => {
+      // debugger
+      console.log('MovePositionEnd', ballElement.label)
+    })
+
+    Reflect.set(ball, ANGLE_PROP, angle)
     this.node.addChild(ball)
 
     const idx = nodes.findIndex((v, k) => {
-      const r = Reflect.get(v, '__radians__')
-      console.log('================rrrrrrrrrrrrrrrrr', r, radians)
-      return r > radians
+      const a = Reflect.get(v, ANGLE_PROP)
+      // return r === radians
+      console.log('===================k:', k, a, angle)
+      return a >= angle
     })
-    if (!~idx) {
-      if (idx === 0) {
-        this.ballNodes.unshift(ball)
-      } else {
-        this.ballNodes.splice(idx - 1, 0, ball)
-      }
+
+    if (~idx) {
+      this.ballNodes.splice(idx, 0, ball)
     } else {
       this.ballNodes.push(ball)
     }
@@ -95,23 +115,25 @@ export class Main extends Component {
     const points = this.getPoint(BASE_RADIUS, 0, 0, count)
     this.ballNodes = Array.from({ length: count }, (v, k) => {
       const ball = instantiate(this._ballElment)
-      const { x, y, r } = points[k]
+      const { x, y, angle } = points[k]
       const ballElement = this._initBallElement(ball, x, y)
       ballElement.label = `${k}`
-      Reflect.set(ball, '__radians__', r)
+      Reflect.set(ball, ANGLE_PROP, angle)
       this.node.addChild(ball)
       return ball
     })
   }
 
   getPoint(r: number, ox: number, oy: number, count: number) {
-    const radians = (Math.PI / 180) * Math.round(360 / count) // 弧度
+    const angle = Math.round(360 / count)
+    const radians = (Math.PI / 180) * angle // 弧度
     const points = []
     for (let i = 0; i < count; i++) {
       const r1 = radians * i
       const x = ox + r * Math.sin(r1)
       const y = oy + r * Math.cos(r1)
-      points.unshift({ x, y, r: r1 }) // 为保持数据顺时针
+      // points.unshift({ x, y, r: r1, angle: angle * i }) // 为保持数据顺时针
+      points.push({ x, y, r: r1, angle: angle * i })
     }
     return points
   }
