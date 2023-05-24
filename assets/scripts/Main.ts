@@ -73,7 +73,6 @@ export class Main extends Component {
     })
 
     Reflect.set(ball, ANGLE_PROP, angle)
-    this.node.addChild(ball)
 
     const idx = nodes.findIndex((v, k) => {
       const a = Reflect.get(v, ANGLE_PROP)
@@ -87,6 +86,7 @@ export class Main extends Component {
     } else {
       this.ballNodes.push(ball)
     }
+    this.node.addChild(ball)
 
     console.log('sssssssssssssssss', nodes, this.ballNodes)
   }
