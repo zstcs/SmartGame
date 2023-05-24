@@ -4,6 +4,8 @@ export interface AtomItem {
   atom: string
 }
 
+export type Nullable<T> = T | null | undefined
+
 export const Atoms: Array<AtomItem> = [
   { name: '氢', atom: 'H', value: '1' },
   { name: '氦', atom: 'He', value: '2' },

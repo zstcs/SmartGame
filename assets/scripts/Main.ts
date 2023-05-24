@@ -6,6 +6,7 @@ import {
   debug,
   instantiate,
   IPhysics2DContact,
+  Label,
   Node,
   PhysicsSystem2D,
   Prefab,
@@ -15,6 +16,7 @@ import {
   Vec3
 } from 'cc'
 import { BallElement, BallElementEvent } from './BallElement'
+import { AtomItem, Atoms } from './common/Atom'
 const { ccclass, property } = _decorator
 const BASE_RADIUS = 300
 const ANGLE_PROP = '__angle__'
@@ -26,12 +28,25 @@ export class Main extends Component {
   @property({ type: Node, visible: true, displayName: '添加球' })
   private addBallElement: Node = null
 
+  @property({ type: Label, visible: true, displayName: '添加文本' })
+  private addLabel: Label = null
+
   private ballNodes: Node[] = []
   private isAddBalling: boolean = false
 
   protected onLoad(): void {
     this.addBallElement.active = false
     this.initBallElementInfos()
+  }
+
+  private _currentAdd: AtomItem = null
+
+  private _cacheAdd: Set<AtomItem> = new Set()
+
+  set currentAdd(value: AtomItem) {
+    this._currentAdd = value
+    this.addLabel.string = value.atom
+    this._cacheAdd.add(value)
   }
 
   start() {
@@ -41,9 +56,13 @@ export class Main extends Component {
   update(deltaTime: number) {}
 
   init() {
+    this._createAddBall()
+    this.addLabel.string = this._currentAdd.atom
     this.addBallElement.active = true
+
     const uOpacity = this.addBallElement.getComponent(UIOpacity)
     Tween.stopAllByTarget(uOpacity)
+
     uOpacity.opacity = 0
     tween(uOpacity).to(0.5, { opacity: 255 }).start()
 
@@ -62,7 +81,8 @@ export class Main extends Component {
     const x = 0 + BASE_RADIUS * Math.sin(radians)
     const y = 0 + BASE_RADIUS * Math.cos(radians)
     const ballElement = this._initBallElement(ball, x, y)
-    ballElement.label = name ?? String(nodes.length)
+    ballElement.info = this._currentAdd
+    // ballElement.label = name ?? String(nodes.length)
     ballElement.node.once(BallElementEvent.PlayAnimationEnd, () => {
       this.resetBallPostion()
       this.isAddBalling = false
@@ -89,6 +109,19 @@ export class Main extends Component {
     this.node.addChild(ball)
 
     console.log('sssssssssssssssss', nodes, this.ballNodes)
+
+    this._createAddBall()
+  }
+
+  _createAddBall() {
+    const randomNum = Math.random()
+    if (randomNum <= 0.75) {
+      this.currentAdd = Atoms[Math.floor(Math.random() * 116)]
+    } else if (randomNum <= 0.95) {
+      this.currentAdd = { name: '+', atom: '+', value: '998' }
+    } else {
+      this.currentAdd = { name: '-', atom: '-', value: '999' }
+    }
   }
 
   resetBallPostion() {
@@ -111,29 +144,32 @@ export class Main extends Component {
     return ballElement
   }
   initBallElementInfos() {
-    const count = 4
-    const points = this.getPoint(BASE_RADIUS, 0, 0, count)
+    const count = 5
+    const points = this.getPoint(BASE_RADIUS, 0, 0, count, 10)
     this.ballNodes = Array.from({ length: count }, (v, k) => {
+      const info = Atoms[Math.floor(Math.random() * 116)]
       const ball = instantiate(this._ballElment)
       const { x, y, angle } = points[k]
       const ballElement = this._initBallElement(ball, x, y)
       ballElement.label = `${k}`
+      ballElement.info = info
       Reflect.set(ball, ANGLE_PROP, angle)
       this.node.addChild(ball)
       return ball
     })
   }
 
-  getPoint(r: number, ox: number, oy: number, count: number) {
+  getPoint(r: number, ox: number, oy: number, count: number, offset: number = 0) {
     const angle = Math.round(360 / count)
     const radians = (Math.PI / 180) * angle // 弧度
+    const offsetRadians = (Math.PI / 180) * offset // 弧度
     const points = []
     for (let i = 0; i < count; i++) {
-      const r1 = radians * i
+      const r1 = radians * i + offsetRadians
       const x = ox + r * Math.sin(r1)
       const y = oy + r * Math.cos(r1)
       // points.unshift({ x, y, r: r1, angle: angle * i }) // 为保持数据顺时针
-      points.push({ x, y, r: r1, angle: angle * i })
+      points.push({ x, y, r: r1, angle: angle * i + offset })
     }
     return points
   }

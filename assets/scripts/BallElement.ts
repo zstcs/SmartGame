@@ -14,6 +14,7 @@ import {
   Tween,
   Vec3
 } from 'cc'
+import { AtomItem, Nullable } from './common/Atom'
 
 const { ccclass, property } = _decorator
 
@@ -33,6 +34,18 @@ export class BallElement extends Component {
   private isLoading: boolean = false
 
   private _playTween: Tween<Node> = null
+
+  private _info: Nullable<AtomItem> = null
+
+  get info() {
+    return this._info
+  }
+  set info(value: Nullable<AtomItem>) {
+    this._info = value
+    if (value) {
+      this.label = value.atom
+    }
+  }
 
   onLoad() {
     // this.setAnimationInfo()
