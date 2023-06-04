@@ -2,44 +2,46 @@ export interface AtomItem {
   name: string
   value: string
   atom: string
+  color?: string
+  valueColor?: string
 }
 
 export type Nullable<T> = T | null | undefined
 
 export const Atoms: Array<AtomItem> = [
-  { name: '氢', atom: 'H', value: '1' },
-  { name: '氦', atom: 'He', value: '2' },
-  { name: '锂', atom: 'Li', value: '3' },
-  { name: '铍', atom: 'Be', value: '4' },
-  { name: '硼', atom: 'B', value: '5' },
-  { name: '碳', atom: 'C', value: '6' },
-  { name: '氮', atom: 'N', value: '7' },
-  { name: '氧', atom: 'O', value: '8' },
-  { name: '氟', atom: 'F', value: '9' },
-  { name: '氖', atom: 'Ne', value: '10' },
-  { name: '钠', atom: 'Na', value: '11' },
-  { name: '镁', atom: 'Mg', value: '12' },
-  { name: '铝', atom: 'Al', value: '13' },
-  { name: '硅', atom: 'Si', value: '14' },
-  { name: '磷', atom: 'P', value: '15' },
-  { name: '硫', atom: 'S', value: '16' },
-  { name: '氯', atom: 'Cl', value: '17' },
-  { name: '氩', atom: 'Ar', value: '18' },
-  { name: '钾', atom: 'K', value: '19' },
-  { name: '钙', atom: 'Ca', value: '20' },
-  { name: '钪', atom: 'Sc', value: '21' },
-  { name: '钛', atom: 'Ti', value: '22' },
-  { name: '钒', atom: 'V', value: '23' },
-  { name: '铬', atom: 'Cr', value: '24' },
-  { name: '锰', atom: 'Mn', value: '25' },
-  { name: '铁', atom: 'Fe', value: '26' },
-  { name: '钴', atom: 'Co', value: '27' },
-  { name: '镍', atom: 'Ni', value: '28' },
-  { name: '铜', atom: 'Cu', value: '29' },
-  { name: '锌', atom: 'Zn', value: '30' },
-  { name: '镓', atom: 'Ga', value: '31' },
-  { name: '锗', atom: 'Ge', value: '32' },
-  { name: '砷', atom: 'As', value: '33' },
+  { name: '氢', atom: 'H', value: '1', color: '#6E9CB3', valueColor: '#8CBED9' },
+  { name: '氦', atom: 'He', value: '2', color: '#D0C998', valueColor: '#D9D19E' },
+  { name: '锂', atom: 'Li', value: '3', color: '#5B6C73', valueColor: '#A2A6AA' },
+  { name: '铍', atom: 'Be', value: '4', color: '#B6AFB1', valueColor: '#CCCCCC' },
+  { name: '硼', atom: 'B', value: '5', color: '#775454', valueColor: '#9E7878' },
+  { name: '碳', atom: 'C', value: '6', color: '#3B3B3B', valueColor: '#878787' },
+  { name: '氮', atom: 'N', value: '7', color: '#61C3B2', valueColor: '#7CD9C9' },
+  { name: '氧', atom: 'O', value: '8', color: '#8FE89F', valueColor: '#AEFFBC' },
+  { name: '氟', atom: 'F', value: '9', color: '#E6C47B', valueColor: '#FFDD9C' },
+  { name: '氖', atom: 'Ne', value: '10', color: '#B03681', valueColor: '#8C2D6D' },
+  { name: '钠', atom: 'Na', value: '11', color: '#D59A7C', valueColor: '#F2B695' },
+  { name: '镁', atom: 'Mg', value: '12', color: '#967FDC', valueColor: '#A993F2' },
+  { name: '铝', atom: 'Al', value: '13', color: '#838282', valueColor: '#C0C0C0' },
+  { name: '硅', atom: 'Si', value: '14', color: '#48416D', valueColor: '#645D8C' },
+  { name: '磷', atom: 'P', value: '15', color: '#C54F46', valueColor: '#E6685E' },
+  { name: '硫', atom: 'S', value: '16', color: '#405B76', valueColor: '#6386A6' },
+  { name: '氯', atom: 'Cl', value: '17', color: '#642677', valueColor: '#874B99' },
+  { name: '氩', atom: 'Ar', value: '18', color: '#8F45A0', valueColor: '#A993F2' },
+  { name: '钾', atom: 'K', value: '19', color: '#5B864D', valueColor: '#7DA66F' },
+  { name: '钙', atom: 'Ca', value: '20', color: '#D9D9D8', valueColor: '#F2F2F2' },
+  { name: '钪', atom: 'Sc', value: '21', color: '#75B67C', valueColor: '#9AD9A1' },
+  { name: '钛', atom: 'Ti', value: '22', color: '#595958', valueColor: '#80807E' },
+  { name: '钒', atom: 'V', value: '23', color: '#6C9DB7', valueColor: '#92C0D9' },
+  { name: '铬', atom: 'Cr', value: '24', color: '#9F88B1', valueColor: '#BCA6CC' },
+  { name: '锰', atom: 'Mn', value: '25', color: '#C9534E', valueColor: '#E67370' },
+  { name: '铁', atom: 'Fe', value: '26', color: '#A6957F', valueColor: '#BFAF9B' },
+  { name: '钴', atom: 'Co', value: '27', color: '#4B71DC', valueColor: '#6A8CEB' },
+  { name: '镍', atom: 'Ni', value: '28', color: '#BBC299', valueColor: '#D4D9B4' },
+  { name: '铜', atom: 'Cu', value: '29', color: '#AC5D41', valueColor: '#D9886D' },
+  { name: '锌', atom: 'Zn', value: '30', color: '#B4B4B3', valueColor: '#D8D9D8' },
+  { name: '镓', atom: 'Ga', value: '31', color: '#60B57B', valueColor: '#83D99F' },
+  { name: '锗', atom: 'Ge', value: '32', color: '#969277', valueColor: '#BFBB9F' },
+  { name: '砷', atom: 'As', value: '33', color: '#758496', valueColor: '#A1AFBF' },
   { name: '硒', atom: 'Se', value: '34' },
   { name: '溴', atom: 'Br', value: '35' },
   { name: '氪', atom: 'Kr', value: '36' },
@@ -126,3 +128,6 @@ export const Atoms: Array<AtomItem> = [
   //   { name: 'tian', atom: 'Ts', value: '117' },
   //   { name: '奥', atom: 'Og', value: '118' }
 ]
+
+export const AddAtom: AtomItem = { name: '+', atom: '+', value: '998', color: '#C94E42' }
+export const SubAtom: AtomItem = { name: '-', atom: '-', value: '999', color: '#4E79BE' }

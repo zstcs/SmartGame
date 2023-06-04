@@ -1,25 +1,29 @@
 import {
   _decorator,
   Collider2D,
+  Color,
   Component,
   Contact2DType,
   debug,
+  Graphics,
   instantiate,
   IPhysics2DContact,
   Label,
   Node,
   PhysicsSystem2D,
   Prefab,
+  Sprite,
   Tween,
   tween,
   UIOpacity,
   Vec3
 } from 'cc'
 import { BallElement, BallElementEvent } from './BallElement'
-import { AtomItem, Atoms } from './common/Atom'
+import { AddAtom, AtomItem, Atoms, SubAtom } from './common/Atom'
 const { ccclass, property } = _decorator
-const BASE_RADIUS = 300
+const BASE_RADIUS = 280
 const ANGLE_PROP = '__angle__'
+const maxAtomNumber = 33
 @ccclass('Main')
 export class Main extends Component {
   @property({ type: Prefab, visible: true, displayName: '预制体' })
@@ -30,6 +34,9 @@ export class Main extends Component {
 
   @property({ type: Label, visible: true, displayName: '添加文本' })
   private addLabel: Label = null
+
+  @property({ type: Graphics, visible: true, displayName: '背景绘图' })
+  private bgGraphics: Graphics = null
 
   private ballNodes: Node[] = []
   private isAddBalling: boolean = false
@@ -46,7 +53,20 @@ export class Main extends Component {
   set currentAdd(value: AtomItem) {
     this._currentAdd = value
     this.addLabel.string = value.atom
+    this.setAddBallElement()
     this._cacheAdd.add(value)
+  }
+
+  setAddBallElement() {
+    this.addBallElement.getChildByName('SpriteSplash').getComponent(Sprite).color = new Color(this._currentAdd.color)
+    //this.addBallElement.getChildByName('Label-Sub').getComponent(Label).color = new Color()
+    const subLabel = this.addBallElement.getChildByName('Label-Sub').getComponent(Label)
+    if (this._currentAdd !== AddAtom && this._currentAdd !== SubAtom) {
+      subLabel.string = this._currentAdd.value
+    } else {
+      subLabel.string = ''
+    }
+    this.addBallElement.active = true
   }
 
   start() {
@@ -56,6 +76,10 @@ export class Main extends Component {
   update(deltaTime: number) {}
 
   init() {
+    this.bgGraphics.circle(0, 0, 360)
+    this.bgGraphics.lineWidth = 4
+    this.bgGraphics.stroke()
+
     this._createAddBall()
     this.addLabel.string = this._currentAdd.atom
     this.addBallElement.active = true
@@ -116,11 +140,11 @@ export class Main extends Component {
   _createAddBall() {
     const randomNum = Math.random()
     if (randomNum <= 0.75) {
-      this.currentAdd = Atoms[Math.floor(Math.random() * 116)]
+      this.currentAdd = Atoms[Math.floor(Math.random() * maxAtomNumber)]
     } else if (randomNum <= 0.95) {
-      this.currentAdd = { name: '+', atom: '+', value: '998' }
+      this.currentAdd = AddAtom
     } else {
-      this.currentAdd = { name: '-', atom: '-', value: '999' }
+      this.currentAdd = SubAtom
     }
   }
 
@@ -145,9 +169,9 @@ export class Main extends Component {
   }
   initBallElementInfos() {
     const count = 5
-    const points = this.getPoint(BASE_RADIUS, 0, 0, count, 10)
+    const points = this.getPoint(BASE_RADIUS, 0, 0, count, 0)
     this.ballNodes = Array.from({ length: count }, (v, k) => {
-      const info = Atoms[Math.floor(Math.random() * 116)]
+      const info = Atoms[Math.floor(Math.random() * maxAtomNumber)]
       const ball = instantiate(this._ballElment)
       const { x, y, angle } = points[k]
       const ballElement = this._initBallElement(ball, x, y)

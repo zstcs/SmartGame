@@ -4,12 +4,14 @@ import {
   Animation,
   AnimationClip,
   Collider2D,
+  Color,
   Component,
   Contact2DType,
   IPhysics2DContact,
   Label,
   Node,
   RigidBody2D,
+  Sprite,
   tween,
   Tween,
   Vec3
@@ -29,6 +31,9 @@ export class BallElement extends Component {
   @property({ type: Label })
   private nameLabel: Label = null
 
+  @property({ type: Label })
+  private subLabel: Label = null
+
   private animation: Animation = null
 
   private isLoading: boolean = false
@@ -44,6 +49,10 @@ export class BallElement extends Component {
     this._info = value
     if (value) {
       this.label = value.atom
+      this.node.getChildByName('bg').getComponent(Sprite).color = new Color(value.color)
+      // this.nameLabel.color = new Color(value.valueColor)
+      this.subLabel.string = value.value
+      this.subLabel.color = new Color(value.valueColor)
     }
   }
 
